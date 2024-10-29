@@ -7,8 +7,10 @@ class Idle:
     def enter(boy, e):
         if left_up(e) or right_down(e):
             boy.action = 2
+            boy.face_dir = -1
         elif right_up(e) or left_down(e) or start_event(e):
             boy.action = 3
+            boy.face_dir = 1
 
         boy.frame = 0
         boy.dir = 0
@@ -31,7 +33,6 @@ class Idle:
                             100, 100, boy.x, boy.y)
 
 
-
 class Sleep:
     @staticmethod
     def enter(boy, e):
@@ -47,13 +48,13 @@ class Sleep:
 
     @staticmethod
     def draw(boy):
-        if boy.action == 2:
+        if boy.face_dir == -1:
             boy.image.clip_composite_draw(
                 boy.frame * 100, 300, 100, 100,
                 3.141592 / 2,  # 회전 각도
-                'v',  # 좌우상하 반전 X
+                'v',  # 좌우상하 반전
                 boy.x + 25, boy.y - 25, 100, 100)
-        if boy.action == 3:
+        if boy.action == 1:
             boy.image.clip_composite_draw(
                 boy.frame * 100, 300, 100, 100,
                 3.141592 / 2,  # 회전 각도
@@ -95,6 +96,12 @@ class AutoRun:
     def enter(boy, e):
         boy.frame = 0
         boy.start_time = get_time()
+        if boy.face_dir == -1:
+            boy.dir = -1
+            boy.action = 0
+        else:
+            boy.dir = 1
+            boy.action = 1
 
     @staticmethod
     def exit(boy, e):
@@ -102,12 +109,26 @@ class AutoRun:
 
     @staticmethod
     def do(boy):
-        if get_time() - boy.start_time > 2:
+        if get_time() - boy.start_time > 5:
             boy.state_machine.add_event(('TIME_OUT', 0))
+
+        if boy.x > 750:
+            boy.face_dir = -1
+            boy.dir = -1
+            boy.action = 0
+        elif boy.x < 50:
+            boy.face_dir = 1
+            boy.dir = 1
+            boy.action = 1
+
+        boy.frame = (boy.frame + 1) % 8
+        boy.x += boy.dir * 5
 
     @staticmethod
     def draw(boy):
-        pass
+        boy.image.clip_draw(
+            boy.frame * 100, boy.action * 100, 100, 100,
+            boy.x, boy.y + 35, 200, 200 )
 
 
 class Boy:
