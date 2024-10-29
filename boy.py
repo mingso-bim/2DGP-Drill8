@@ -90,6 +90,24 @@ class Run:
         )
 
 
+class AutoRun:
+    @staticmethod
+    def enter(boy):
+        pass
+
+    @staticmethod
+    def exit(boy):
+        pass
+
+    @staticmethod
+    def do(boy):
+        pass
+
+    @staticmethod
+    def draw(boy):
+        pass
+
+
 class Boy:
     def __init__(self):
         self.x, self.y = 400, 90
