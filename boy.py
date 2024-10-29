@@ -22,7 +22,7 @@ class Idle:
     @staticmethod
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
-        if get_time() - boy.start_time > 1:
+        if get_time() - boy.start_time > 5:
             boy.state_machine.add_event(('TIME_OUT', 0))
 
     @staticmethod
@@ -92,16 +92,18 @@ class Run:
 
 class AutoRun:
     @staticmethod
-    def enter(boy):
-        pass
+    def enter(boy, e):
+        boy.frame = 0
+        boy.start_time = get_time()
 
     @staticmethod
-    def exit(boy):
+    def exit(boy, e):
         pass
 
     @staticmethod
     def do(boy):
-        pass
+        if get_time() - boy.start_time > 2:
+            boy.state_machine.add_event(('TIME_OUT', 0))
 
     @staticmethod
     def draw(boy):
@@ -119,9 +121,10 @@ class Boy:
         self.state_machine.start(Idle)  # 객체를 생성한 게 아니고 직접 Idle 클래스 사용
         self.state_machine.set_transitions(
             {
-                Idle: { right_down: Run, left_down:Run,left_up: Run, right_up: Run, time_out: Sleep },
-                Run : { right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle },
-                Sleep: { right_down: Run, left_down:Run,left_up: Run, right_up: Run, space_down:Idle }
+                Idle: { right_down: Run, left_down:Run,left_up: Run, right_up: Run, time_out: Sleep, a: AutoRun },
+                Run : { right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, a: AutoRun },
+                Sleep: { right_down: Run, left_down:Run,left_up: Run, right_up: Run, space_down:Idle },
+                AutoRun: { right_down: Run, left_down:Run,left_up: Run, right_up: Run, time_out: Idle }
             }
         )
 
